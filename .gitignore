@@ -102,3 +102,14 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# IDE generated files
+.idea
+
+# OS-X files
+.DS_Store
+
+Serverless directories
+*.serverless
+*.requirements
+*node_modules
