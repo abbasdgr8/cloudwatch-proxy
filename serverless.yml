@@ -1,0 +1,51 @@
+service: monitoring-service
+
+
+frameworkVersion: "=1.30.0"
+
+
+provider:
+  name: aws
+  runtime: python2.7
+  region: us-west-2
+  memorySize: 256
+  timeout: 60
+  stage: ${opt:stage, self:custom.defaultStage}
+  iamRoleStatements: ${file(${self:custom.iam.${self:provider.stage}})}
+  environment:
+    LOG_SEVERITY: ${opt:logSeverity, self:custom.defaultLogSeverity}
+    ALERT_PROCESS_ERRORS: ${opt:alertProcessErrors, self:custom.defaultAlertProcessErrors}
+    CONFIG_FILE: ${self:custom.configs.${self:provider.stage}}
+
+
+custom:
+  defaultStage: stage
+  profiles:
+      stage: TABSTAGE
+      prod: TABPROD
+  defaultLogSeverity: "INFO"
+  configs:
+    stage: ./configs/stage/config.cfg
+    prod: ./configs/prod/config.cfg
+  iam:
+    stage: ./configs/stage/iam.yml
+    prod: ./configs/prod/iam.yml
+
+
+functions:
+  cloudwatchLogsSubscriber:
+    handler: log_subscriber.process_logs
+    events:
+      - cloudwatchLog: /aws/lambda/some-service-${self:provider.stage}-someFunction1
+      - cloudwatchLog: /aws/lambda/some-service-${self:provider.stage}-someFunction2
+  alertsManager:
+    handler: alerts_manager.manage_alerts
+
+
+package:
+  exclude:
+    - node_modules/**
+
+
+plugins:
+  - serverless-python-requirements

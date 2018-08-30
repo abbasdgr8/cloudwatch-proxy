@@ -1,0 +1,5 @@
+  - Effect: "Allow"
+    Action:
+      - "lambda:InvokeFunction"
+    Resource:
+      - arn:aws:lambda:us-west-2:xxxxxxxxxxxx:function:monitoring-service-prod-alertsManager

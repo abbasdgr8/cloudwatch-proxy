@@ -1,0 +1,12 @@
+{
+  "name": "monitoring-service",
+  "version": "1.0.0",
+  "description": "Logging adapter that consumes log streams from AWS CloudWatch, streams them to other log destinations. Also capable of identifying alerts and notifying via Slack and Email",
+  "authors": [
+    "Abbas Attarwala",
+    ""
+  ],
+  "dependencies": {
+    "serverless-python-requirements": "^2.3.3"
+  }
+}
