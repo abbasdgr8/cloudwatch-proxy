@@ -1,8 +1,8 @@
 import json
 import logging
 import os
-import requests
 import urllib
+from slacker import Slacker
 from utils import envconfigreader as cfg
 from utils import lambdaLoggers as log
 
@@ -92,30 +92,23 @@ def identify_alerts(error_logs):
     return alerts, lambda_name, log_stream
 
 
-# Sends an alert to the ecom alerting channel on Slack
+# Sends an alert to the specified channel on Slack
 def alert_slack_channel(alert, lambda_name, log_stream):
 
-    formatted_slack_message = get_formatted_slack_message(alert, lambda_name, log_stream)
-
-    url = cfg.get_property('Slack', 'url')
     api_token = cfg.get_property('Slack', 'token')
     channel_name = cfg.get_property('Slack', 'channelName')
 
-    headers = {'Content-Type': 'application/json'}
-    params = {'apiToken': api_token}
-    payload = {'channelName': channel_name, 'message': formatted_slack_message}
+    slacker = get_slacker(api_token)
+    formatted_slack_message = get_formatted_slack_message(alert, lambda_name, log_stream)
 
-    r = requests.post(url, headers=headers, params=params, data=json.dumps(payload))
-    logger.info("BlueJeans Slacker Response: %s", r.text)
+    post_response = slacker.chat.post_message(channel_name, formatted_slack_message)
+    logger.info("Post Message API Response from Slacker: %s", json.dumps(post_response.body))
 
-    if r.status_code != 200 and r.status_code != 201:
-        logger.error("%s - Error sending a slack alert via BlueJeans Slacker", str(r.status_code))
-        raise RuntimeError(r.text)
+    if post_response.error is not None:
+        logger.error("Posting slack message '%s' to channel %s failed", formatted_slack_message, channel_name)
+        raise RuntimeError(post_response.raw)
 
-    data = r.json()
-
-    logger.warn("Slack alert was sent successfully via BlueJeans Slacker: %s", json.dumps(alert))
-    return data
+    return post_response
 
 
 # Checks if this is a lambda whose error messages should be alerted
@@ -140,3 +133,9 @@ def get_formatted_slack_message(alert, lambda_name, log_stream):
                               "```\n<" + cloudwatch_url + "|Click to View Logs in CloudWatch>"
 
     return formatted_slack_message
+
+
+# Instantiates and returns a Slacker client
+def get_slacker(api_token):
+    slack = Slacker(api_token)
+    return slack
