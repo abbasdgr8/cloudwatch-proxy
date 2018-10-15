@@ -21,8 +21,8 @@ provider:
 custom:
   defaultStage: stage
   profiles:
-      stage: TABSTAGE
-      prod: TABPROD
+      stage: STAGE
+      prod: PROD
   defaultLogSeverity: "INFO"
   configs:
     stage: ./configs/stage/config.cfg
