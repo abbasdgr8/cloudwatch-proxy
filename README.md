@@ -1,10 +1,8 @@
 # AWS CloudWatch Proxy 
 
-Featured on [serverless.com](https://github.com/serverless/examples) official documentation as an example implementation
-
 Logging adapter that consumes log streams from AWS CloudWatch, streams them to other log destinations. Also capable of identifying alerts and notifying via Slack and Email
 
-This has been developed as a Serverless application.
+This has been developed as a Serverless application. Featured on [serverless.com](https://github.com/serverless/examples) official documentation as an example implementation.
 
 ## Pre-Requisites
 - You must have Python 2.7.1 installed and setup on your machine
