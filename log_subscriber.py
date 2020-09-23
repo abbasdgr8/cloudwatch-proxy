@@ -46,7 +46,7 @@ def multicast(log_data):
         log.service_error(error, "An error occured while trying to asynchronously invoke the paperTrailProxy lambda")
 
 
-# Asynchronously invokes the lambda that manages the eCommerce Middleware alerts
+# Asynchronously invokes the lambda that manages application alerts
 def async_invoke_lambda_alerts_manager(log_data):
 
     lambda_client = boto3.client('lambda')
